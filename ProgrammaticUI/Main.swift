@@ -82,14 +82,18 @@ class MyView: UIView{
 class ViewController: UIViewController {
     
     var myView = MyView(frame: CGRect(x: 20, y: 35, width: 130, height: 50))
-    var myImageView = UIImageView(frame: CGRect(x: 50, y: 50, width: 350, height: 350))
+    
+    var myImageView = UIImageView(frame: CGRect(x: -80, y: -10, width: 700, height: 700))
+    var potatoImageView = UIImageView(frame: CGRect(x: -50, y: 0, width: 400, height: 400))
     var rollingThunderAnimation:UIImage?;
     var jabAnimation:UIImage?
     var idleAnimation: UIImage?
-    var isAnimated = false
     var punchCounter = 0
+    var score = 0
+    var timer = Timer()
+    var myTextView = UITextView()
     
-
+    //////////////////////////////////  ANIMATION DECLARATION ZONE  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
     let rollingThunder = [UIImage (named: "thunder1")!, UIImage (named: "thunder2")!, UIImage (named: "thunder3")!, UIImage (named: "thunder4")!, UIImage (named: "thunder5")!, UIImage (named: "thunder6")!, UIImage (named: "thunder7")!, UIImage (named: "thunder8")!, UIImage (named: "thunder9")!, UIImage (named: "thunder10")!, UIImage (named: "thunder11")!, UIImage (named: "thunder12")!, UIImage (named: "thunder13")!, UIImage (named: "thunder14")!, UIImage (named: "thunder15")!, UIImage (named: "thunder16")!, UIImage (named: "thunder17")!, UIImage (named: "thunder18")!, UIImage (named: "thunder19")!, UIImage (named: "thunder20")!]
     
@@ -102,25 +106,35 @@ class ViewController: UIViewController {
     
     let fiercePunch = [UIImage (named: "Fierce1")!, UIImage (named: "Fierce2")!, UIImage (named: "Fierce3")!, UIImage (named: "Fierce4")!, UIImage (named: "Fierce5")!, UIImage (named: "Fierce6")!, UIImage (named: "Fierce7")!, UIImage (named: "Fierce8")!, UIImage (named: "Fierce9")!, UIImage (named: "Fierce10")!, UIImage (named: "Fierce11")!, UIImage (named: "Fierce12")!, UIImage (named: "Fierce13")!, UIImage (named: "Fierce14")!]
     
+    let machineGunPunch = [UIImage (named: "MGP1")!, UIImage (named: "MGP2")!, UIImage (named: "MGP3")!, UIImage (named: "MGP4")!, UIImage (named: "MGP5")!, UIImage (named: "MGP6")!, UIImage (named: "MGP7")!, UIImage (named: "MGP8")!, UIImage (named: "MGP9")!, UIImage (named: "MGP10")!]
+  
+    let straightPunch = [UIImage (named: "straight1")!, UIImage (named: "straight2")!, UIImage (named: "straight3")!, UIImage (named: "straight4")!, UIImage (named: "straight5")!, UIImage (named: "straight6")!, UIImage (named: "straight7")!, UIImage (named: "straight8")!, UIImage (named: "straight9")!]
     
-    // Removed UIImage (named: "SidewinderPunch1")!,
     
+    let hurricaneBlow = [UIImage (named: "hurricane1")!, UIImage (named: "hurricane2")!, UIImage (named: "hurricane3")!, UIImage (named: "hurricane4")!, UIImage (named: "hurricane5")!, UIImage (named: "hurricane6")!, UIImage (named: "hurricane7")!, UIImage (named: "hurricane8")!, UIImage (named: "hurricane9")!, UIImage (named: "hurricane10")!, UIImage (named: "hurricane11")!, UIImage (named: "hurricane12")!, UIImage (named: "hurricane13")!, UIImage (named: "hurricane13")!,UIImage (named: "hurricane13")!,UIImage (named: "hurricane13")!,UIImage (named: "hurricane14")!, UIImage (named: "hurricane15")!, UIImage (named: "hurricane16")!]
+    
+    
+    
+    /////////////////////////////  VIEWDIDLOAD  \\\\\\\\\\\\\\\\\\\\\\\\\\
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
 
-
-//        self.idleAnimatedState()
+        self.potatoImageView.image = UIImage (named: "POTATES")
+        self.potatoImageView.layer.shadowRadius = 10
+        self.potatoImageView.layer.shadowOpacity = 1
+        self.potatoImageView.layer.shadowColor = UIColor.clear.cgColor
         self.myImageView.animationImages = idle
         self.myImageView.animationDuration = 0.5
         self.myImageView.animationRepeatCount = 0
         self.myImageView.startAnimating()
        
+        
 
 
 
-/////////////////////////////  DECLARE ANIMATIONS HERE  ///////////////////////////
+
         
 
     
@@ -130,19 +144,28 @@ class ViewController: UIViewController {
         label.numberOfLines = 2
         label.textColor = .white
 
-
         label.textAlignment = .left
         label.lineBreakMode = .byWordWrapping
         myView.addSubview(label)
+          myView.addSubview(potatoImageView)
         myView.addSubview(self.myImageView)
+      
         
         self.view.addSubview(myView)
+
 //        self.createSegmentControl()
         self.createTextView()
         self.createTapGesture()
         self.createLongPressGesture()
-        self.createButton()
+//        self.createButton()
         self.createSwipeGesture()
+        self.createTwoFingerTapGesture()
+        self.createPinchGesture()
+//        self.myImageView = UIImageView(frame: CGRect(x:view.frame.width - self.myImageView.frame.width), y: -10, width: 700, height: 700)
+//        self.potatoImageView.frame = CGRect(x:Double(view.frame.width - potatoImageView.frame.width * 1.5) , y: -20, width: 500, height: 500)
+        self.myImageView.frame = CGRect(x: self.view.frame.origin.x-100 , y: self.view.frame.origin.y+100, width: 700, height: 700)
+        self.potatoImageView.frame = CGRect(x: self.view.frame.origin.x-400 , y: self.view.frame.origin.y-100, width: 700, height: 700)
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -151,10 +174,59 @@ class ViewController: UIViewController {
     }
     
     
+    func createPinchGesture(){
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch))
+        view.addGestureRecognizer(pinchGesture)
+    }
+    
+    func handlePinch(){
+        
+        if(self.myImageView.animationImages! != hurricaneBlow){
+        punchCounter+=1
+            score += 10
+            myTextView.text = "You have done \(score) damage to the attacking Potatoes"
+        self.myImageView.animationImages = hurricaneBlow
+        self.myImageView.animationDuration = 1
+        self.myImageView.animationRepeatCount = 1
+        self.myImageView.startAnimating()
+        self.perform(#selector(ViewController.idleAnimatedState), with: nil, afterDelay: myImageView.animationDuration)
+        }else{
+            return
+        }
+    
+    }
+    
+    func createTwoFingerTapGesture(){
+        
+        let twoFingerTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTwoFingerTap))
+        twoFingerTapGesture.numberOfTouchesRequired = 2
+        view.addGestureRecognizer(twoFingerTapGesture)
+        
+        
+    }
+    
+//////////////////////////////  MACHINE GUN PUNCH  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    
+    func handleTwoFingerTap(){
+//        print("WOOP WOOP THAT'S THE SOUND OF THE POLICE")
+        punchCounter += 1
+        score += 3
+        
+        myTextView.text = "You have done \(score) damage to the attacking Potatoes"
+            self.myImageView.animationImages = machineGunPunch
+            self.myImageView.animationDuration = 0.5
+            self.myImageView.animationRepeatCount = 1
+            self.myImageView.startAnimating()
+            self.perform(#selector(ViewController.idleAnimatedState), with: nil, afterDelay: myImageView.animationDuration)
+        
+    
+    }
     
     func createSwipeGesture(){
         let swipeGestureLeft = UISwipeGestureRecognizer(target:self, action: #selector(handleSwipeGesture))
         swipeGestureLeft.direction = UISwipeGestureRecognizerDirection.left
+        
         
         let swipeGestureRight = UISwipeGestureRecognizer(target:self, action: #selector(handleSwipeGesture))
         swipeGestureRight.direction = UISwipeGestureRecognizerDirection.right
@@ -169,6 +241,8 @@ class ViewController: UIViewController {
     
     func handleSwipeGesture(){
         punchCounter+=1
+        score += 5
+        myTextView.text = "You have done \(score) damage to the attacking Potatoes"
         self.myImageView.animationImages = fiercePunch
         self.myImageView.animationDuration = 0.5
         self.myImageView.animationRepeatCount = 0
@@ -186,7 +260,10 @@ class ViewController: UIViewController {
         switch gesture.state {
         case .began:
             punchCounter += 1
-
+            timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(thunderScore), userInfo: nil, repeats: true)
+            
+        
+//            score += 1
             self.myImageView.animationImages = rollingThunder
             self.myImageView.animationDuration = 0.5
             self.myImageView.animationRepeatCount = 0
@@ -196,6 +273,7 @@ class ViewController: UIViewController {
         case .ended:
             self.perform(#selector(ViewController.idleAnimatedState), with: nil, afterDelay: myImageView.animationDuration)
 //            self.idleAnimatedState()
+            timer.invalidate()
             break
         default:
             punchCounter += 1
@@ -206,10 +284,17 @@ class ViewController: UIViewController {
 
     }
     
+    func thunderScore(){
+        score += 2
+        myTextView.text = "You have done \(score) damage to the attacking Potatoes"
+//        print(score)
+    }
+    
+    
     func enterIdleAnimation(){
-        self.myImageView.stopAnimating()
-        self.myImageView.image = idleAnimation
+//        self.myImageView.stopAnimating()
         self.myImageView.animationDuration = 0.5
+        self.myImageView.image = idleAnimation
         self.myImageView.animationRepeatCount = 0
         self.myImageView.startAnimating()
 
@@ -223,46 +308,110 @@ class ViewController: UIViewController {
     }
     
     
+    
+
 
 ////////////////////////////////////// JAB ATTACK (TAP GESTURE) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     
     func handleTapGesture(sender: UITapGestureRecognizer){
-         punchCounter += 1
+        
+        if(self.myImageView.animationImages! == straightPunch){
+//            score += 1
+            self.perform(#selector(ViewController.delayedPunch), with: nil, afterDelay: myImageView.animationDuration)
+            
+        }else{
+            
+            punchCounter += 1
+            score += 1
+            myTextView.text = "You have done \(score) damage to the attacking Potatoes"
+            self.myImageView.animationImages = jab
+            self.myImageView.animationDuration = 0.5
+            self.myImageView.animationRepeatCount = 1
+            self.myImageView.startAnimating()
+            
+            self.perform(#selector(ViewController.idleAnimatedState), with: nil, afterDelay: myImageView.animationDuration)
+        }
+    }
+    
+    func delayedPunch(){
+        punchCounter += 1
+        myTextView.text = "You have done \(score) damage to the attacking Potatoes"
         self.myImageView.animationImages = jab
         self.myImageView.animationDuration = 0.5
         self.myImageView.animationRepeatCount = 1
         self.myImageView.startAnimating()
         
         self.perform(#selector(ViewController.idleAnimatedState), with: nil, afterDelay: myImageView.animationDuration)
-
-       
-    
     }
     
 ////////////////////////////////////  CREATE TAP GESTURE  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     
     func createTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
+            doubleTapGesture.numberOfTapsRequired = 2
         tapGesture.numberOfTapsRequired = 1
         view.addGestureRecognizer(tapGesture)
+        view.addGestureRecognizer(doubleTapGesture)
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+            //perform before rotation begins
+        
+        coordinator.animate(alongsideTransition: { [unowned self] (context)  in
+            
+            //perform during rotation
+            if size.width > size.height {
+                self.potatoImageView.frame = CGRect(x: self.view.frame.origin.x-200 , y: self.view.frame.origin.y-300, width: 700, height: 700)
+                self.myImageView.frame = CGRect(x: self.view.frame.origin.x+100 , y: self.view.frame.origin.y-120, width: 700, height: 700)
+            } else {
+                self.myImageView.frame = CGRect(x: self.view.frame.origin.x-100 , y: self.view.frame.origin.y+100, width: 700, height: 700)
+                 self.potatoImageView.frame = CGRect(x: self.view.frame.origin.x-400 , y: self.view.frame.origin.y-100, width: 700, height: 700)
+            }
+            
+            
+        }) { (context) in
+            
+            //after rotation has finished
+            
+        }
+        
+    }
+    
+    
   
-
-////////////////////////////////////  COMBO ATTACK (MAKE THIS INTO A HOLD)  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-    func handleButtonTap(sender:Any){
-       
+    func handleDoubleTapGesture(){
         punchCounter += 1
+        score += 1
+        myTextView.text = "You have done \(score) damage to the attacking Potatoes"
+        self.myImageView.animationImages = straightPunch
+        self.myImageView.animationDuration = 0.5
+        self.myImageView.animationRepeatCount = 1
+        self.myImageView.startAnimating()
+        self.perform(#selector(ViewController.idleAnimatedState), with: nil, afterDelay: myImageView.animationDuration)
+
+    }
+
+////////////////////////////////////  OLD BUTTON PRESS METHOD. FIND SOMETHING TO DO WITH IT.  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    func handleButtonTap(sender:Any){
+    
+        punchCounter += 1
+        myTextView.text = "You have done \(score) damage to the attacking Potatoes"
         self.myImageView.animationImages = rollingThunder
         self.myImageView.animationDuration = 0.5
         self.myImageView.animationRepeatCount = 1
         self.myImageView.startAnimating()
+        
+//        print("BREAK THE LINE MOFUGGA")
         
             self.perform(#selector(ViewController.idleAnimatedState), with: nil, afterDelay: myImageView.animationDuration)
        
     }
     func idleAnimatedState(){
 //        self.myImageView.stopAnimating()
+//        print(score)
         punchCounter -= 1
         if punchCounter == 0 {
             self.myImageView.animationImages = idle
@@ -273,12 +422,11 @@ class ViewController: UIViewController {
     }
     
     func createTextView() {
-        let myTextView = UITextView(frame: CGRect(x: 0, y: self.view.bounds.size.height - 100, width: self.view.bounds.size.width, height: 100))
+       myTextView = UITextView(frame: CGRect(x: 0, y: self.view.bounds.size.height - 100, width: self.view.bounds.size.width, height: 100))
         myTextView.backgroundColor = .red
-        for _ in 0..<50{
-            myTextView.text = myTextView.text.appending("Lern2code \n")
-            
-        }
+//        for _ in 0..<50{
+//            myTextView.text = myTextView.text.appending("Lern2code \n")
+        myTextView.text = "You have done \(score) damage to the attacking Potatoes \n"
         myTextView.isEditable = false
         self.view.addSubview(myTextView)
     }
@@ -290,18 +438,19 @@ class ViewController: UIViewController {
 //        self.view.insertSubview(self.myImageView, at: 0)
 //    }
     
-    func createButton() {
-        let button = UIButton(frame: CGRect(x: self.view.bounds.size.width/2, y: 35, width: 60, height: 25))
-        
-        button.setTitle("Rotate", for: UIControlState.normal)
-        button.backgroundColor = .blue
-        button.addTarget(self, action: #selector(handleButtonTap), for: UIControlEvents.touchUpInside)
-        self.view.addSubview(button)
-        
-    }
+//    func createButton() {
+//        let button = UIButton(frame: CGRect(x: self.view.bounds.size.width/2, y: 35, width: 60, height: 25))
+//        
+//        button.setTitle("Rotate", for: UIControlState.normal)
+//        button.backgroundColor = .blue
+//        button.addTarget(self, action: #selector(handleButtonTap), for: UIControlEvents.touchUpInside)
+//        self.view.addSubview(button)
+//        
+//    }
 
 
 }
+
 
 
 //    func createSegmentControl()  {
